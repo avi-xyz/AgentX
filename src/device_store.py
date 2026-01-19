@@ -104,10 +104,11 @@ class Device:
         return dev
 
 class DeviceStore:
-    def __init__(self):
+    def __init__(self, settings_manager=None):
         import threading
         self.devices: Dict[str, Device] = {} # Keyed by MAC
         self.lock = threading.Lock()
+        self.settings = settings_manager # Reference to global settings
 
     def add_or_update(self, ip: str, mac: str, vendor: str = None):
         now = __import__("time").time()
@@ -141,12 +142,20 @@ class DeviceStore:
                 # Only assign IP if not active elsewhere
                 active_owner = any(d.ip == ip and (now - d.last_seen < 30) for d in self.devices.values())
                 assigned_ip = ip if not active_owner else ""
+                
+                # Check Paranoid Mode (Auto-Block)
+                is_blocked = False
+                if self.settings and self.settings.get("paranoid_mode", False):
+                    is_blocked = True
+                    __import__("logging").info(f"PARANOID MODE: Auto-blocking new device {mac}")
+
                 self.devices[mac] = Device(
                     ip=assigned_ip, 
                     mac=mac, 
                     vendor=vendor or "Unknown",
                     last_known_ip=assigned_ip,
-                    last_seen=now
+                    last_seen=now,
+                    is_blocked=is_blocked
                 )
             return self.devices[mac]
 

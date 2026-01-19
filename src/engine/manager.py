@@ -8,8 +8,9 @@ import netifaces
 logger = logging.getLogger(__name__)
 
 class EngineCoordinator:
-    def __init__(self, device_store):
+    def __init__(self, device_store, settings_manager=None):
         self.device_store = device_store
+        self.settings = settings_manager
         self.scanner = None
         self.monitor = None
         self.discovery = None
@@ -20,7 +21,25 @@ class EngineCoordinator:
     def _detect_network(self):
         """Robustlly detect the primary interface and gateway."""
         try:
-            # 1. Try netifaces for default gateway
+            # 1. Use manual interface if set, else try netifaces for default gateway
+            manual_iface = self.settings.get("interface") if self.settings else None
+            if manual_iface:
+                self.interface = manual_iface
+                # We still need gateway IP for monitor
+                gws = netifaces.gateways()
+                # Try to find gateway for this specific interface
+                for gw in gws.get(netifaces.AF_INET, []):
+                    if gw[1] == self.interface:
+                        self.gateway_ip = gw[0]
+                        break
+                if not self.gateway_ip:
+                    # Fallback to default
+                    default_gw = gws.get('default', {}).get(netifaces.AF_INET)
+                    if default_gw: self.gateway_ip = default_gw[0]
+                
+                logger.info(f"Using manual interface: {self.interface} -> {self.gateway_ip}")
+                return
+
             gws = netifaces.gateways()
             default_gw = gws.get('default', {}).get(netifaces.AF_INET)
             if default_gw:
@@ -59,7 +78,8 @@ class EngineCoordinator:
         logger.info("Starting networking engines...")
         
         try:
-            self.scanner = NetworkScanner(self.device_store, interface=self.interface)
+            scan_interval = self.settings.get("scan_interval", 30) if self.settings else 30
+            self.scanner = NetworkScanner(self.device_store, interface=self.interface, scan_interval=scan_interval)
             self.monitor = BandwidthMonitor(self.device_store, gateway_ip=self.gateway_ip, interface=self.interface)
             self.discovery = DiscoveryListener(self.device_store)
 
@@ -96,3 +116,16 @@ class EngineCoordinator:
                     logger.warning(f"{name} thread did not exit gracefully.")
         
         logger.info("Stopped networking engines.")
+
+    def update_settings(self, new_settings):
+        """Update live engines with new settings where possible."""
+        if not self._running: return
+        
+        if "scan_interval" in new_settings and self.scanner:
+            self.scanner.scan_interval = int(new_settings["scan_interval"])
+            logger.info(f"Updated scan interval to {self.scanner.scan_interval}s")
+        
+        if "interface" in new_settings:
+            # Interface change usually requires a restart, but we'll log it for now
+            # In a full impl, we might call stop() and start() again
+            logger.warning("Interface changed in settings. Restart required for full effect.")

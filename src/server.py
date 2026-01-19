@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 from src.device_store import DeviceStore, DeviceCategory
 from src.engine.manager import EngineCoordinator
+from src.settings_manager import SettingsManager
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -27,11 +28,12 @@ app.add_middleware(
 )
 
 # Shared State
-device_store = DeviceStore()
+settings_manager = SettingsManager()
+device_store = DeviceStore(settings_manager)
 device_store.load_from_file("devices.json")
 
 # Engine Manager
-coordinator = EngineCoordinator(device_store)
+coordinator = EngineCoordinator(device_store, settings_manager)
 
 @app.on_event("startup")
 async def startup_event():
@@ -61,6 +63,11 @@ class ScheduleRequest(BaseModel):
     mac: str
     start: str
     end: str
+
+class SettingsUpdate(BaseModel):
+    interface: Optional[str] = None
+    scan_interval: Optional[int] = None
+    paranoid_mode: Optional[bool] = None
 
 # Endpoints
 @app.get("/api/devices")
@@ -127,6 +134,22 @@ async def get_global_stats():
         "total_down_kbps": round(total_down, 2),
         "global_kill_switch": monitor.global_kill_switch if monitor else False
     }
+
+@app.get("/api/settings")
+async def get_settings():
+    import netifaces
+    interfaces = netifaces.interfaces()
+    return {
+        "settings": settings_manager.settings,
+        "available_interfaces": interfaces
+    }
+
+@app.post("/api/settings")
+async def update_settings(req: SettingsUpdate):
+    update_data = {k: v for k, v in req.dict().items() if v is not None}
+    settings_manager.update(update_data)
+    coordinator.update_settings(update_data)
+    return {"status": "ok", "settings": settings_manager.settings}
 
 # WebSocket for Real-time Updates
 class ConnectionManager:

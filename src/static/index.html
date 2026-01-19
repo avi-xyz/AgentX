@@ -22,11 +22,11 @@
             </div>
 
             <nav>
-                <div class="nav-item active">
+                <div class="nav-item active" id="nav-dashboard" onclick="switchView('dashboard')">
                     <i data-lucide="layout-dashboard"></i>
                     <span>Dashboard</span>
                 </div>
-                <div class="nav-item">
+                <div class="nav-item" id="nav-settings" onclick="switchView('settings')">
                     <i data-lucide="settings"></i>
                     <span>Settings</span>
                 </div>
@@ -59,31 +59,75 @@
 
         <!-- Main Content -->
         <main id="main">
-            <header>
-                <h1>Network Overview</h1>
-                <div class="status-badge" id="network-status">
-                    <span class="dot"></span>
-                    <span id="device-count">Detecting Devices...</span>
-                </div>
-            </header>
+            <div id="dashboard-view">
+                <header>
+                    <h1>Network Overview</h1>
+                    <div class="status-badge" id="network-status">
+                        <span class="dot"></span>
+                        <span id="device-count">Detecting Devices...</span>
+                    </div>
+                </header>
 
-            <div class="device-table-container glass">
-                <table id="device-table">
-                    <thead>
-                        <tr>
-                            <th>IP Address</th>
-                            <th>MAC Address</th>
-                            <th>Vendor</th>
-                            <th>Status/Category</th>
-                            <th>Upload</th>
-                            <th>Download</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="device-list">
-                        <!-- Devices injected here -->
-                    </tbody>
-                </table>
+                <div class="device-table-container glass">
+                    <table id="device-table">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>MAC Address</th>
+                                <th>Vendor</th>
+                                <th>Status/Category</th>
+                                <th>Upload</th>
+                                <th>Download</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="device-list">
+                            <!-- Devices injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="settings-view" style="display: none;">
+                <header>
+                    <h1>System Configuration</h1>
+                </header>
+
+                <div class="settings-container glass">
+                    <div class="settings-group">
+                        <h3>Network Interface</h3>
+                        <p class="desc">Select the hardware interface to monitor. Restart required.</p>
+                        <select id="setting-interface" class="glass-input">
+                            <!-- Options injected here -->
+                        </select>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>Active Scan Interval (seconds)</h3>
+                        <div class="slider-container">
+                            <input type="range" id="setting-scan-interval" min="5" max="300" step="5" value="30"
+                                class="glass-slider">
+                            <span id="scan-interval-val">30s</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="flex-between">
+                            <div>
+                                <h3>Paranoid Mode</h3>
+                                <p class="desc">Auto-block and terminate internet for any new MAC address instantly.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="setting-paranoid-mode">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <button id="save-settings" class="btn-primary">DEPLOY CONFIGURATION</button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>

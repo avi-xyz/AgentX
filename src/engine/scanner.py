@@ -117,9 +117,13 @@ class NetworkScanner(threading.Thread):
         listener.start()
         
         # Periodic Active Scan
+        last_scan = 0
         while self.running:
-            self.scan()
-            time.sleep(self.scan_interval)
+            now = time.time()
+            if now - last_scan >= self.scan_interval:
+                self.scan()
+                last_scan = now
+            time.sleep(1)
 
     def _passive_listener(self):
         """

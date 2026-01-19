@@ -7,6 +7,7 @@ function init() {
     connectWebSocket();
     setupEventListeners();
     initMatrixEffect();
+    loadSettings();
 }
 
 function initMatrixEffect() {
@@ -240,6 +241,89 @@ function setupEventListeners() {
             console.error(err);
         }
     });
+
+    document.getElementById('setting-scan-interval').addEventListener('input', (e) => {
+        document.getElementById('scan-interval-val').textContent = `${e.target.value}s`;
+    });
+
+    document.getElementById('save-settings').addEventListener('click', saveSettings);
+}
+
+function switchView(viewName) {
+    const dashboardView = document.getElementById('dashboard-view');
+    const settingsView = document.getElementById('settings-view');
+    const navDash = document.getElementById('nav-dashboard');
+    const navSettings = document.getElementById('nav-settings');
+
+    if (viewName === 'dashboard') {
+        dashboardView.style.display = 'block';
+        settingsView.style.display = 'none';
+        navDash.classList.add('active');
+        navSettings.classList.remove('active');
+    } else {
+        dashboardView.style.display = 'none';
+        settingsView.style.display = 'block';
+        navDash.classList.remove('active');
+        navSettings.classList.add('active');
+        loadSettings();
+    }
+}
+
+async function loadSettings() {
+    try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        const settings = data.settings;
+
+        // Fill Interface Select
+        const select = document.getElementById('setting-interface');
+        const currentIface = settings.interface;
+        select.innerHTML = data.available_interfaces.map(iface =>
+            `<option value="${iface}" ${iface === currentIface ? 'selected' : ''}>${iface}</option>`
+        ).join('');
+
+        // Fill Scan Interval
+        document.getElementById('setting-scan-interval').value = settings.scan_interval;
+        document.getElementById('scan-interval-val').textContent = `${settings.scan_interval}s`;
+
+        // Fill Paranoid Mode
+        document.getElementById('setting-paranoid-mode').checked = settings.paranoid_mode;
+
+    } catch (err) {
+        console.error("Failed to load settings:", err);
+    }
+}
+
+async function saveSettings() {
+    const btn = document.getElementById('save-settings');
+    const originalText = btn.textContent;
+
+    const payload = {
+        interface: document.getElementById('setting-interface').value,
+        scan_interval: parseInt(document.getElementById('setting-scan-interval').value),
+        paranoid_mode: document.getElementById('setting-paranoid-mode').checked
+    };
+
+    try {
+        const res = await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            btn.textContent = 'SYSTEM UPDATED - RESTART RECOMMENDED';
+            btn.classList.add('success');
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('success');
+            }, 3000);
+        }
+    } catch (err) {
+        console.error("Failed to save settings:", err);
+        btn.textContent = 'ERROR SAVING CONFIG';
+        setTimeout(() => { btn.textContent = originalText; }, 2000);
+    }
 }
 
 window.onload = init;

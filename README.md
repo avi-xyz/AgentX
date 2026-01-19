@@ -7,8 +7,9 @@ AgentX is a high-performance network monitoring and security application. It pro
 - **Device Discovery**: Combines ARP scanning, passive ARP listening, and mDNS/SSDP discovery for near-instant device detection.
 - **Traffic Analysis**: Real-time upload/download tracking using Scapy with SNI/DNS sniffing for domain logging.
 - **Network Control**: Selective internet blocking (ARP spoofing) and a global "Kill Switch" for the entire local network.
-- **Homebrew Theme UI**: A custom, terminal-inspired web dashboard built with JetBrains Mono and performance-optimized Chart.js.
-- **Reliable Backend**: Multi-threaded architecture with a central `EngineCoordinator` for graceful startup and shutdown.
+- **Dynamic Configuration**: Adjust scan intervals, select network interfaces, and enable "Paranoid Mode" directly from the UI.
+- **Homebrew Theme UI**: A custom, terminal-inspired web dashboard with integrated "System Configuration" management.
+- **Reliable Backend**: Multi-threaded architecture with a central `EngineCoordinator` and persistent `SettingsManager`.
 
 ## Installation
 
