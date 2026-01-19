@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentX | Network Inspector</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="glass-container">
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <div class="logo">
+                <i data-lucide="shield-alert" class="logo-icon"></i>
+                <span>AgentX</span>
+            </div>
+
+            <nav>
+                <div class="nav-item active">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="settings"></i>
+                    <span>Settings</span>
+                </div>
+            </nav>
+
+            <div class="global-controls">
+                <div class="control-card">
+                    <div class="control-header">
+                        <i data-lucide="zap"></i>
+                        <span>Kill Switch</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="global-kill-switch">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="stats-sidebar">
+                <div class="mini-stat">
+                    <span class="label">Total Up</span>
+                    <span class="value" id="global-up">0.0 KB/s</span>
+                </div>
+                <div class="mini-stat">
+                    <span class="label">Total Down</span>
+                    <span class="value" id="global-down">0.0 KB/s</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="main">
+            <header>
+                <h1>Network Overview</h1>
+                <div class="status-badge" id="network-status">
+                    <span class="dot"></span>
+                    <span id="device-count">Detecting Devices...</span>
+                </div>
+            </header>
+
+            <div class="device-table-container glass">
+                <table id="device-table">
+                    <thead>
+                        <tr>
+                            <th>IP Address</th>
+                            <th>MAC Address</th>
+                            <th>Vendor</th>
+                            <th>Status/Category</th>
+                            <th>Upload</th>
+                            <th>Download</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="device-list">
+                        <!-- Devices injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Device Detail Modal -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2 id="modal-title">Device Details</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="label">Vendor</span>
+                        <span class="value" id="detail-vendor">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">MAC</span>
+                        <span class="value" id="detail-mac">-</span>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Live Bandwidth (KB/s)</h3>
+                    <canvas id="bandwidth-chart"></canvas>
+                </div>
+
+                <div class="activity-section">
+                    <h3>Recent Activity Log</h3>
+                    <ul id="activity-log" class="glass-list">
+                        <!-- Domains injected here -->
+                    </ul>
+                </div>
+
+                <div class="schedule-section">
+                    <h3>Downtime Schedule</h3>
+                    <div class="input-group">
+                        <input type="time" id="sched-start" class="glass-input">
+                        <span>to</span>
+                        <input type="time" id="sched-end" class="glass-input">
+                    </div>
+                    <button id="save-schedule" class="btn-primary">Update Network Policy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

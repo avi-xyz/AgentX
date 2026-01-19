@@ -1,0 +1,460 @@
+:root {
+    --bg-color: #000000;
+    --accent: #00FF00;
+    /* Pure Homebrew Green */
+    --accent-dim: #008800;
+    --danger: #FF0000;
+    --text-primary: #00FF00;
+    --text-secondary: #00CC00;
+    --sidebar-width: 280px;
+    --terminal-font: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--terminal-font);
+}
+
+body {
+    background: var(--bg-color);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+}
+
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.15;
+}
+
+.glass-container {
+    display: flex;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+/* Sidebar Styling */
+#sidebar {
+    width: var(--sidebar-width);
+    background: #000;
+    border-right: 1px solid var(--accent);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 3rem;
+    color: var(--accent);
+}
+
+.logo::before {
+    content: "~ $ ";
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-dim);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+.logo-icon {
+    display: none;
+    /* Terminal doesn't usually have icons like this */
+}
+
+nav {
+    flex-grow: 1;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 0.5rem;
+}
+
+.nav-item::before {
+    content: "[ ";
+}
+
+.nav-item::after {
+    content: " ]";
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: var(--accent);
+    color: #000;
+}
+
+/* Main Content Area */
+#main {
+    flex-grow: 1;
+    padding: 2.5rem;
+    overflow-y: auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px dashed var(--accent-dim);
+    padding-bottom: 1rem;
+}
+
+header h1::before {
+    content: "man antigravity --";
+}
+
+h1 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: lowercase;
+}
+
+.status-badge {
+    background: #000;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--accent);
+}
+
+.status-badge::before {
+    content: "[ ";
+}
+
+.status-badge::after {
+    content: " ]";
+}
+
+.dot {
+    display: none;
+}
+
+/* Matrix Table -> Terminal Table */
+.device-table-container {
+    background: #000;
+    border: 1px solid var(--accent);
+    padding: 1rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 0.75rem;
+    color: #000;
+    background: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--accent-dim);
+    font-size: 0.85rem;
+}
+
+tr:hover td {
+    background: #111;
+}
+
+.rate-up {
+    color: var(--accent);
+}
+
+.rate-down {
+    color: var(--accent);
+    opacity: 0.8;
+}
+
+.btn-icon {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 0.7rem;
+}
+
+.btn-icon:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.btn-block {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+/* Switch Controls */
+.control-card {
+    background: #000;
+    border: 1px solid var(--accent);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.control-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #002200;
+    border: 1px solid var(--glass-border);
+    transition: .4s;
+    border-radius: 4px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 3px;
+    background-color: var(--text-secondary);
+    transition: .4s;
+    border-radius: 2px;
+}
+
+input:checked+.slider {
+    background-color: var(--accent);
+}
+
+input:checked+.slider:before {
+    transform: translateX(24px);
+    background-color: #000;
+}
+
+/* Stats Sidebar */
+.stats-sidebar {
+    margin-top: auto;
+    border-top: 1px dashed var(--glass-border);
+    padding-top: 1rem;
+}
+
+.mini-stat {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+}
+
+.mini-stat .label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.mini-stat .value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    width: 700px;
+    background: #000;
+    border: 2px solid var(--accent);
+    padding: 2rem;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 0.5rem;
+}
+
+.modal-header h2::before {
+    content: "cat ";
+}
+
+.close-btn {
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0 10px;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.detail-item .label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.detail-item .label::after {
+    content: ":";
+}
+
+.detail-item .value {
+    color: var(--accent);
+    word-break: break-all;
+}
+
+.chart-container {
+    height: 220px;
+    margin-bottom: 2rem;
+    background: #000;
+    border: 1px solid var(--accent-dim);
+    padding: 1rem;
+}
+
+.chart-container h3,
+.activity-section h3,
+.schedule-section h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #000;
+    background: var(--accent);
+    padding: 2px 10px;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.glass-list {
+    list-style: none;
+    max-height: 180px;
+    overflow-y: auto;
+    margin-bottom: 2rem;
+    border: 1px solid var(--accent-dim);
+}
+
+.glass-list li {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--accent);
+}
+
+.glass-list li::before {
+    content: "-> ";
+    color: var(--text-secondary);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-primary::before {
+    content: "[ ";
+}
+
+.btn-primary::after {
+    content: " ]";
+}
+
+.btn-primary:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.glass-input {
+    background: #000;
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    padding: 5px;
+}
+
+.glass-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
