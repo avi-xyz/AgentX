@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+scapy
+netifaces
+pydantic
+chartjs-python
