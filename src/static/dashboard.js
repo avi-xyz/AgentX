@@ -61,13 +61,11 @@ function updateUI(data) {
             list.appendChild(row);
         }
 
-    }
-
         row.className = dev.is_stale ? 'stale-row' : '';
 
-    const statusText = dev.is_blocked ? 'TERMINATED' : (dev.is_stale ? 'INACTIVE' : dev.category);
+        const statusText = dev.is_blocked ? 'TERMINATED' : (dev.is_stale ? 'INACTIVE' : dev.category);
 
-    row.innerHTML = `
+        row.innerHTML = `
             <td>${dev.ip}</td>
             <td class="mac-cell">${dev.mac}</td>
             <td>${dev.vendor}</td>
@@ -85,17 +83,17 @@ function updateUI(data) {
                 </div>
             </td>
         `;
-});
+    });
 
-// Cleanup stale rows that are no longer in the update
-const activeMacs = devices.map(d => `row-${d.mac.replace(/:/g, '-')}`);
-Array.from(list.children).forEach(row => {
-    if (!activeMacs.includes(row.id)) {
-        list.removeChild(row);
-    }
-});
+    // Cleanup stale rows that are no longer in the update
+    const activeMacs = devices.map(d => `row-${d.mac.replace(/:/g, '-')}`);
+    Array.from(list.children).forEach(row => {
+        if (!activeMacs.includes(row.id)) {
+            list.removeChild(row);
+        }
+    });
 
-lucide.createIcons();
+    lucide.createIcons();
 }
 
 function updateDetailView(dev) {
