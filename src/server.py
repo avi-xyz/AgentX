@@ -185,6 +185,9 @@ async def websocket_endpoint(websocket: WebSocket):
             dt = now - last_time
             if dt <= 0: continue
             
+            # Cleanup stale devices (no traffic/scan for 60s)
+            device_store.cleanup_stale_devices(60)
+            
             # Snapshot devices to avoid blocking other threads with long lock holds
             devices_map = device_store.get_snapshot()
             updates = []

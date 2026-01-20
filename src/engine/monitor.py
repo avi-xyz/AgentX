@@ -333,6 +333,7 @@ class BandwidthMonitor(threading.Thread):
         src_mac = pkt[Ether].src
         dst_mac = pkt[Ether].dst
         length = len(pkt)
+        now = time.time()
         
         # IPv6 Detection & Discovery
         if pkt.haslayer(IPv6):
@@ -357,6 +358,7 @@ class BandwidthMonitor(threading.Thread):
         # Upload Analysis
         if src_mac in self.device_store.devices:
             dev = self.device_store.devices[src_mac]
+            dev.last_seen = now
             
             # Active Blocking Feedback (ICMP Reject)
             if self.should_block(dev):
@@ -403,6 +405,7 @@ class BandwidthMonitor(threading.Thread):
         # Download Analysis
         if dst_mac in self.device_store.devices:
             dev = self.device_store.devices[dst_mac]
+            dev.last_seen = now
             if not hasattr(dev, "total_down"): dev.total_down = 0
             dev.total_down += length
 

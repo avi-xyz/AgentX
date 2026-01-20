@@ -159,6 +159,15 @@ class DeviceStore:
                 )
             return self.devices[mac]
 
+    def cleanup_stale_devices(self, threshold_seconds: float):
+        """Clears IP for devices not seen in the last X seconds to mark them as stale."""
+        now = __import__("time").time()
+        with self.lock:
+            for dev in self.devices.values():
+                if dev.ip and (now - dev.last_seen > threshold_seconds):
+                    __import__("logging").info(f"Marking device {dev.mac} ({dev.ip}) as stale due to inactivity timeout.")
+                    dev.ip = ""
+
     def get_all(self) -> List[Device]:
         with self.lock:
             return list(self.devices.values())

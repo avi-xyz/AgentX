@@ -62,9 +62,18 @@
             <div id="dashboard-view">
                 <header>
                     <h1>Network Overview</h1>
-                    <div class="status-badge" id="network-status">
-                        <span class="dot"></span>
-                        <span id="device-count">Detecting Devices...</span>
+                    <div class="header-right">
+                        <div class="filter-controls">
+                            <span class="label">ACTIVE ONLY</span>
+                            <label class="switch small">
+                                <input type="checkbox" id="filter-active-only">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="status-badge" id="network-status">
+                            <span class="dot"></span>
+                            <span id="device-count">Detecting Devices...</span>
+                        </div>
                     </div>
                 </header>
 

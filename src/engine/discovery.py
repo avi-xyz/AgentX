@@ -129,6 +129,7 @@ class DiscoveryListener(threading.Thread):
                  break
         
         if target_dev:
+            target_dev.last_seen = __import__("time").time()
             if hostname and not target_dev.hostname:
                 target_dev.hostname = hostname
             

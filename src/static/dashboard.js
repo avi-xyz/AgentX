@@ -2,6 +2,7 @@ let socket;
 let devices = [];
 let currentDeviceMac = null;
 let bandwidthChart = null;
+let showActiveOnly = false;
 
 function init() {
     connectWebSocket();
@@ -53,6 +54,12 @@ function updateUI(data) {
 
     devices.forEach(dev => {
         let row = document.getElementById(`row-${dev.mac.replace(/:/g, '-')}`);
+        const isHidden = showActiveOnly && dev.is_stale;
+
+        if (isHidden) {
+            if (row) row.style.display = 'none';
+            return;
+        }
 
         if (!row) {
             row = document.createElement('tr');
@@ -60,6 +67,7 @@ function updateUI(data) {
             list.appendChild(row);
         }
 
+        row.style.display = '';
         row.className = dev.is_stale ? 'stale-row' : '';
 
         row.innerHTML = `
@@ -247,6 +255,22 @@ function setupEventListeners() {
     });
 
     document.getElementById('save-settings').addEventListener('click', saveSettings);
+
+    document.getElementById('filter-active-only').addEventListener('change', (e) => {
+        showActiveOnly = e.target.checked;
+        // Trigger UI update immediately with cached devices
+        if (devices.length > 0) {
+            const mockData = {
+                devices: devices,
+                global_stats: {
+                    total_up: document.getElementById('global-up').textContent.split(' ')[0],
+                    total_down: document.getElementById('global-down').textContent.split(' ')[1],
+                    kill_switch: document.getElementById('global-kill-switch').checked
+                }
+            };
+            updateUI(mockData);
+        }
+    });
 }
 
 function switchView(viewName) {
