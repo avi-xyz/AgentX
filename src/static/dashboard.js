@@ -54,12 +54,6 @@ function updateUI(data) {
 
     devices.forEach(dev => {
         let row = document.getElementById(`row-${dev.mac.replace(/:/g, '-')}`);
-        const isHidden = showActiveOnly && dev.is_stale;
-
-        if (isHidden) {
-            if (row) row.style.display = 'none';
-            return;
-        }
 
         if (!row) {
             row = document.createElement('tr');
@@ -67,14 +61,17 @@ function updateUI(data) {
             list.appendChild(row);
         }
 
-        row.style.display = '';
+    }
+
         row.className = dev.is_stale ? 'stale-row' : '';
 
-        row.innerHTML = `
+    const statusText = dev.is_blocked ? 'TERMINATED' : (dev.is_stale ? 'INACTIVE' : dev.category);
+
+    row.innerHTML = `
             <td>${dev.ip}</td>
             <td class="mac-cell">${dev.mac}</td>
             <td>${dev.vendor}</td>
-            <td><span class="status-cell ${dev.is_blocked ? 'blocked' : ''}">${dev.is_blocked ? 'TERMINATED' : dev.category}</span></td>
+            <td><span class="status-cell ${dev.is_blocked ? 'blocked' : ''} ${dev.is_stale ? 'stale' : ''}">${statusText}</span></td>
             <td class="rate-up">${dev.up_rate} KB/s</td>
             <td class="rate-down">${dev.down_rate} KB/s</td>
             <td>
@@ -88,17 +85,17 @@ function updateUI(data) {
                 </div>
             </td>
         `;
-    });
+});
 
-    // Cleanup stale rows that are no longer in the update
-    const activeMacs = devices.map(d => `row-${d.mac.replace(/:/g, '-')}`);
-    Array.from(list.children).forEach(row => {
-        if (!activeMacs.includes(row.id)) {
-            list.removeChild(row);
-        }
-    });
+// Cleanup stale rows that are no longer in the update
+const activeMacs = devices.map(d => `row-${d.mac.replace(/:/g, '-')}`);
+Array.from(list.children).forEach(row => {
+    if (!activeMacs.includes(row.id)) {
+        list.removeChild(row);
+    }
+});
 
-    lucide.createIcons();
+lucide.createIcons();
 }
 
 function updateDetailView(dev) {
@@ -258,18 +255,12 @@ function setupEventListeners() {
 
     document.getElementById('filter-active-only').addEventListener('change', (e) => {
         showActiveOnly = e.target.checked;
-        // Trigger UI update immediately with cached devices
-        if (devices.length > 0) {
-            const mockData = {
-                devices: devices,
-                global_stats: {
-                    total_up: document.getElementById('global-up').textContent.split(' ')[0],
-                    total_down: document.getElementById('global-down').textContent.split(' ')[1],
-                    kill_switch: document.getElementById('global-kill-switch').checked
-                }
-            };
-            updateUI(mockData);
+        if (showActiveOnly) {
+            document.body.classList.add('filter-active-only');
+        } else {
+            document.body.classList.remove('filter-active-only');
         }
+        console.log("Filter toggled. Active Only:", showActiveOnly);
     });
 }
 

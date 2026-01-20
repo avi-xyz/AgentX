@@ -214,6 +214,25 @@ tr:hover td {
     background: #111;
 }
 
+.stale-row td {
+    opacity: 0.4;
+    font-style: italic;
+}
+
+.stale-row:hover td {
+    opacity: 0.6;
+}
+
+/* CSS-based filtering */
+.filter-active-only .stale-row {
+    display: none !important;
+}
+
+.status-cell.stale {
+    opacity: 0.5;
+    border-style: dashed;
+}
+
 .rate-up {
     color: var(--accent);
 }
