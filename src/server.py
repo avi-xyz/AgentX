@@ -179,6 +179,8 @@ async def websocket_endpoint(websocket: WebSocket):
         last_stats_map = {} # mac -> (total_up, total_down)
         last_time = time.time()
         
+        logger.info(f"WebSocket client connected: {websocket.client}")
+        
         while True:
             await asyncio.sleep(2) # Update every 2 seconds
             now = time.time()
@@ -240,6 +242,12 @@ async def websocket_endpoint(websocket: WebSocket):
                 }
             })
     except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        logger.info("WebSocket client disconnected")
+    except Exception as e:
+        import traceback
+        logger.error(f"CRITICAL: WebSocket loop crashed: {e}")
+        logger.error(traceback.format_exc())
         manager.disconnect(websocket)
 
 # Mount Static Files
