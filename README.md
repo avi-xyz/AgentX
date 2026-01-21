@@ -11,16 +11,7 @@ AgentX is a high-performance network monitoring and security application. It pro
 - **Homebrew Theme UI**: A custom, terminal-inspired web dashboard with integrated "System Configuration" management.
 - **Reliable Backend**: Multi-threaded architecture with a central `EngineCoordinator` and persistent `SettingsManager`.
 
-## Installation
-
-### Prerequisites
-
-- **Python 3.9+**
-- **Sudo Privileges**: Required for raw socket access (sniffing and ARP spoofing).
-- **macOS / Linux**: Optimized for macOS BPF and Linux raw sockets.
-
-### Setup
-
+### Standard Linux / macOS Setup
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/avi-xyz/AgentX.git
@@ -37,11 +28,36 @@ AgentX is a high-performance network monitoring and security application. It pro
    sudo python3 -m uvicorn src.server:app --host 0.0.0.0 --port 8000
    ```
 
-## Raspberry Pi Deployment
+---
 
-AgentX is optimized for Raspberry Pi 4 and 5. For dedicated hardware setup, including `systemd` auto-start configuration, please see the:
+## 🐳 Docker Setup (Recommended for NAS/Always-on)
 
-👉 **[Raspberry Pi Deployment Guide](RASPBERRY_PI.md)**
+Docker is the easiest way to run AgentX continuously on a NAS or Home Server.
+
+### Using Docker Compose
+1. Ensure `devices.json` and `settings.json` exist in your directory:
+   ```bash
+   touch devices.json settings.json
+   ```
+2. Start the container:
+   ```bash
+   sudo docker-compose up -d
+   ```
+
+> [!IMPORTANT]
+> AgentX requires `network_mode: host` and `privileged: true` to function correctly as a network inspector.
+
+---
+
+## 🚀 Deployment Alternatives
+
+Beyond the Raspberry Pi, AgentX can be deployed on:
+- **NAS (Synology/QNAP)**: via Docker.
+- **Mini PCs/NUCs**: via Ubuntu Server.
+- **Old Laptops**: A great low-cost way to repurpose hardware.
+
+👉 **[View the Full Deployment Guide](DEPLOYMENT_OPTIONS.md)**
+
 
 ## Usage
 

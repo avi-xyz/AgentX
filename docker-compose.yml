@@ -1,0 +1,13 @@
+services:
+  agentx:
+    build: .
+    container_name: agentx
+    # Required for ARP spoofing and network monitoring
+    network_mode: host
+    privileged: true
+    restart: always
+    volumes:
+      - ./devices.json:/app/devices.json
+      - ./settings.json:/app/settings.json
+    environment:
+      - PYTHONUNBUFFERED=1
