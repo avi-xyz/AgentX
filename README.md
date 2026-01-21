@@ -32,6 +32,17 @@ AgentX is a high-performance network monitoring and security application. It pro
    pip install -r requirements.txt
    ```
 
+3. **Run the application**:
+   ```bash
+   sudo python3 -m uvicorn src.server:app --host 0.0.0.0 --port 8000
+   ```
+
+## Raspberry Pi Deployment
+
+AgentX is optimized for Raspberry Pi 4 and 5. For dedicated hardware setup, including `systemd` auto-start configuration, please see the:
+
+👉 **[Raspberry Pi Deployment Guide](RASPBERRY_PI.md)**
+
 ## Usage
 
 Start the server using `sudo` to ensure the networking engines have the necessary permissions:
