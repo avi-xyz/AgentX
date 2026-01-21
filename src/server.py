@@ -174,8 +174,11 @@ manager = ConnectionManager()
 
 @app.websocket("/ws/updates")
 async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
+    logger.info(f"Incoming WebSocket connection attempt from {websocket.client}")
     try:
+        await manager.connect(websocket)
+        logger.info(f"WebSocket handshake successful for {websocket.client}")
+        
         last_stats_map = {} # mac -> (total_up, total_down)
         last_time = time.time()
         
